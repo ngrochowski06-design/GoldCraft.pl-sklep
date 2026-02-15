@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GoldCraft - Sklep Gold Edition</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Press Start 2P', cursive;
+    background: linear-gradient(180deg, #0a0a0a, #1a1a1a);
+    color: #fff;
+    overflow-x: hidden;
+}
+
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -2;
+}
+
+header {
+    text-align: center;
+    padding: 40px 10px;
+    font-size: 20px;
+    color: gold;
+    text-shadow: 0 0 5px #ffd700, 0 0 10px #fff700, 0 0 20px #ffd700;
+    animation: glow 2s infinite alternate;
+}
+@keyframes glow {
+    from { text-shadow: 0 0 5px #ffd700; }
+    to { text-shadow: 0 0 25px #fff700; }
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 25px;
+    padding: 20px;
+    z-index: 1;
+    position: relative;
+}
+
+.card {
+    background: #1c1c1c;
+    border: 3px solid gold;
+    border-radius: 20px;
+    padding: 30px;
+    width: 280px;
+    box-shadow: 0 0 15px gold;
+    perspective: 1000px;
+    transition: transform 0.4s, box-shadow 0.4s;
+    position: relative;
+}
+.card:hover {
+    transform: rotateY(10deg) scale(1.05);
+    box-shadow: 0 0 40px #ffd700;
+}
+
+.card h3 {
+    margin: 0;
+    font-size: 16px;
+    color: gold;
+    text-shadow: 0 0 5px #fff700;
+}
+.price { margin: 15px 0; font-size: 14px; }
+
+button {
+    padding: 14px;
+    width: 100%;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 10px;
+    background: linear-gradient(90deg,#ffd700,#ffaa00);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+button:hover {
+    background: linear-gradient(90deg,#ffaa00,#ffd700);
+    transform: scale(1.05);
+}
+
+#paymentBox {
+    display: none;
+    margin: 30px auto;
+    width: 90%;
+    max-width: 520px;
+    padding: 30px;
+    background: #1c1c1c;
+    border: 3px solid gold;
+    border-radius: 20px;
+    box-shadow: 0 0 30px gold;
+    animation: fadeIn 0.5s ease-in-out;
+}
+@keyframes fadeIn { from {opacity:0; transform:scale(0.8);} to {opacity:1; transform:scale(1);} }
+
+@media (max-width: 600px) {
+    header { font-size: 16px; padding: 25px 10px; }
+    .card { width: 90%; padding: 20px; }
+    button { font-size: 8px; padding: 12px; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="bg"></canvas>
+
+<header>🎮 GOLDCRAFT - SKLEP GOLD EDITION 🎮</header>
+
+<div class="container">
+    <div class="card">
+        <h3>UNBAN</h3>
+        <div class="price">💰 2 ZŁ</div>
+        <button onclick="buy('UnBan', 2)">KUP TERAZ</button>
+    </div>
+
+    <div class="card">
+        <h3>WHITE LISTA</h3>
+        <div class="price">💰 5 ZŁ</div>
+        <button onclick="buy('White Lista', 5)">KUP TERAZ</button>
+    </div>
+</div>
+
+<div id="paymentBox"></div>
+
+<!-- DŹWIĘKI -->
+<audio id="clickSound"><source src="https://assets.mixkit.co/sfx/preview/mixkit-game-click-1114.mp3"></audio>
+<audio id="boomSound"><source src="https://assets.mixkit.co/sfx/preview/mixkit-explosion-1670.mp3"></audio>
+
+<script>
+const canvas = document.getElementById("bg");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let blocks = [];
+for(let i=0;i<150;i++){
+    blocks.push({
+        x: Math.random()*canvas.width,
+        y: Math.random()*canvas.height,
+        size: Math.random()*8+4,
+        speed: Math.random()*1+0.2,
+        color: Math.random()<0.5?"#ffd700":"#ffaa00"
+    });
+}
+
+function animate(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    blocks.forEach(b=>{
+        ctx.fillStyle=b.color;
+        ctx.fillRect(b.x,b.y,b.size,b.size);
+        b.y+=b.speed;
+        if(b.y>canvas.height) b.y=0;
+    });
+    requestAnimationFrame(animate);
+}
+animate();
+window.addEventListener("resize",()=>{canvas.width=window.innerWidth;canvas.height=window.innerHeight;});
+
+function buy(product, price){
+    document.getElementById("clickSound").play();
+    document.getElementById("boomSound").play();
+
+    const box = document.getElementById("paymentBox");
+    box.style.display = "block";
+    const nick = "nataldo1009";
+    box.innerHTML = `
+        <h3>⚡ PŁATNOŚĆ BLIK ⚡</h3>
+        <p>Produkt: <b>${product}</b></p>
+        <p>Kwota: <b>${price} zł</b></p>
+        <p>Wyślij BLIK na numer:</p>
+        <h2 style="color:gold;">📞 729 973 160</h2>
+        <p>W tytule wpisz swój nick z serwera!</p>
+        <p>Po zapłacie wyślij potwierdzenie na Discord:</p>
+        <h3 style="color:gold;">🎮 ${nick}</h3>
+        <p style="color:lime;">✔ Po potwierdzeniu nadajemy usługę ręcznie</p>
+    `;
+    window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+}
+</script>
+
+</body>
+</html>
